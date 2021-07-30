@@ -1,3 +1,4 @@
 .vs/*
 .vscode/*
 __pycache__/*
+DB/__pycache__/ConnectDB.cpython-39.pyc

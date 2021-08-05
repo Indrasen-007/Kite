@@ -1,7 +1,7 @@
 import requests
 import json
 from Login import login_user
-from db import *
+from MongoDB import insert_many_into_collection
 
 def get_holdings(enctoken):
     url = "https://kite.zerodha.com/oms/portfolio/holdings"
@@ -13,27 +13,42 @@ def get_holdings(enctoken):
     return json.loads(response.text)
 
 def play_with_holding(holdings):
-    if(holdings["status"] == "success"):
-        data = holdings["data"]
-        total = 0
-        for val in data:
-            insert_into_daily_progress_table(val)
-            daily_change = float(val["day_change"])*float(val["quantity"])
-            total += daily_change
-            print("Tradingsymbol = ",val["tradingsymbol"].ljust(15,' '), "Change", round(daily_change,2))
 
-        print("Total profit/loss : ",round(total,2))
-        insert_into_daily_total_progress_table(total)
-        # print(data)
+    try:
+        if(holdings["status"] == "success"):
+            data = holdings["data"]
+            day_pnl = 0
+            total_invested = 0
+            total_pnl = 0
+            current_value = 0
+            for val in data:
+                quantity = float(val["quantity"])
+                day_change = float(val["day_change"]) * quantity
+                average_price = float(val["average_price"]) * quantity
+                pnl = float(val["pnl"]) 
+                day_pnl += day_change
+                total_invested += average_price
+                total_pnl += pnl
+                print("Tradingsymbol = ",val["tradingsymbol"].ljust(15,' '), "Change", round(day_change,2))
+
+            current_value = total_pnl + total_invested
+            kite_daily_overview = {
+                "day_pnl" : day_pnl,
+                "total_pnl" : total_pnl,
+                "total_invested" : total_invested,
+                "current_value" : current_value
+            }
+            print(kite_daily_overview)
+            
+            insert_many_into_collection([kite_daily_overview],'KiteDailyOverview')
+    except Exception as e:
+        print (e)
     
 def main():
     enctoken = login_user()
     holdings = get_holdings(enctoken)
-### this is one time activity
-    # get_or_create_table_daily_progress_table()
-    # get_or_create_table_total_daily_progress_table()
-### end
     play_with_holding(holdings)
+    insert_many_into_collection(holdings["data"],'KiteDailyProgress')
     
 if __name__ == "__main__":
     main()

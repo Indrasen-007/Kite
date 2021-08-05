@@ -7,7 +7,4 @@ class credentials:
 class db_credentials:
     def __init__(self):
         ### DB CREDS
-        self.server = ''
-        self.database = ''
-        self.username = ''
-        self.password = ''  
+        self.CONNECTION_STRING = "mongodb+srv://<username>:<password>@<cluster-name>.mongodb.net/?retryWrites=true&w=majority"

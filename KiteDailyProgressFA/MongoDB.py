@@ -1,9 +1,11 @@
 def get_database():
     import pymongo
+    import Constants
     from Credentials import db_credentials
     conn_str = db_credentials().CONNECTION_STRING
     client = pymongo.MongoClient(conn_str, serverSelectionTimeoutMS=5000)
-    return client['Kite']
+    return client[Constants.KiteDBName]
+
 
 def insert_many_into_collection(data, collection):
     try:
@@ -12,5 +14,4 @@ def insert_many_into_collection(data, collection):
         collection_name.insert_many(data)
         print('Inserted data into '+collection)
     except Exception as e:
-        print (e)
-
+        print(e)

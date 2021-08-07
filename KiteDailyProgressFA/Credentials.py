@@ -8,3 +8,7 @@ class db_credentials:
     def __init__(self):
         ### DB CREDS
         self.CONNECTION_STRING = "mongodb+srv://<username>:<password>@<cluster-name>.mongodb.net/?retryWrites=true&w=majority"
+        
+class elastic_search :
+    def __init__(self):
+        self.private_key = ""        

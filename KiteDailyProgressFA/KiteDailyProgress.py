@@ -1,9 +1,11 @@
 import requests
+from bson import json_util
 import json
 from Login import login_user
 from MongoDB import insert_many_into_collection
 from datetime import datetime
 import Constants
+from ElasticSearch import push_data_to_elastic_search_engine
 
 
 def get_holdings(enctoken):
@@ -43,13 +45,20 @@ def play_with_holding(holdings):
                 "current_value": current_value,
                 "inserted_at": datetime.now()
             }
+            # print(json.dumps(val, default=json_util.default))
             print(kite_daily_overview)
 
             # Insert data into db
             # Insert the data of overall progress
             insert_many_into_collection([kite_daily_overview], Constants.KiteDailyOverviewCollectionName)
             # Insert the data of all the holdings
-            insert_many_into_collection(holdings["data"], Constants.KiteDailyProgressCollectionName)
+            insert_many_into_collection(data, Constants.KiteDailyProgressCollectionName)
+
+            # Insert data into elastic search engine
+            # Insert the data of overall progress
+            push_data_to_elastic_search_engine(json.dumps([kite_daily_overview], default=json_util.default), Constants.KiteDailyOverviewCollectionName)
+            # Insert the data of all the holdings
+            push_data_to_elastic_search_engine(json.dumps(data, default=json_util.default), Constants.KiteDailyProgressCollectionName)
     except Exception as e:
         print(e)
 

@@ -33,6 +33,8 @@ def play_with_holding(holdings):
                 total_invested += average_price
                 total_pnl += pnl
                 print("Tradingsymbol = ", val["tradingsymbol"].ljust(15, ' '), "Change", round(day_change, 2))
+                val["total_day_change"] =  day_change
+                val["total_average_price"] =  average_price
                 val["inserted_at"] = datetime.now()
 
             current_value = total_pnl + total_invested

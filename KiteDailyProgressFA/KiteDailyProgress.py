@@ -25,7 +25,7 @@ def play_with_holding(holdings):
             total_pnl = 0
             current_value = 0
             for val in data:
-                quantity = float(val["quantity"])
+                quantity = float(val["quantity"]) +  float(val["t1_quantity"])
                 day_change = float(val["day_change"]) * quantity
                 average_price = float(val["average_price"]) * quantity
                 pnl = float(val["pnl"])
